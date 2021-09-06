@@ -14,7 +14,7 @@
     * Corrected the physics of the cars and obstacles to work with nitro boost (e.g. replaced `Translate` with `AddForce`).
 
 - Added jumping ability:
-    * When player encounters an obstacle, it can jump over it to earn extra scores.
+    * Added jumping support and handled its side cases.
 
 - Added scoring:
     * Made UI for scoring (on the top left + small tags appeared above the car).
