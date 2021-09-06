@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
@@ -7,22 +6,16 @@ public class ScoreManager : MonoBehaviour
 {
     public TMP_Text player1ScoreTag;
     public TMP_Text player2ScoreTag;
-
-    private int player1Score;
-    private int player2Score;
-
-
-   public GameObject Player1MiniTag;
-
-    public GameObject Player2MiniTag;
+    private int player1Score = 0;
+    private int player2Score = 0;
+    public GameObject player1MiniTag;
+    public GameObject player2MiniTag;
+    public GameObject player1;
+    public GameObject player2;
 
     void Start()
     {
-        player1ScoreTag.text = "Score: 0";
-        player2ScoreTag.text = "Score: 0";
-
-        player1Score = 0;
-        player2Score = 0;
+        StartCoroutine(IncrementLeadingPlayerScore());
     }
 
     public void AddScore(int scoreObtained, int player)
@@ -30,52 +23,55 @@ public class ScoreManager : MonoBehaviour
         if (player == 1)
         {
             player1Score += scoreObtained;
-            player1ScoreTag.text = "Score: " + player1Score;
-            if(scoreObtained>0)
-            {
-                Player1MiniTag.GetComponent<TMP_Text>().color = Color.green;
-            }
-            else
-            {
-                Player1MiniTag.GetComponent<TMP_Text>().color = Color.red;
-            }
-            Player1MiniTag.GetComponent<TMP_Text>().text = scoreObtained.ToString();
-            Player1MiniTag.SetActive(true);
-            StartCoroutine(DisableMiniTag(player));
+            DisplayScoreOnTags(player1Score, scoreObtained, player1ScoreTag, player1MiniTag);
         }
 
         else
         {
             player2Score += scoreObtained;
-            player2ScoreTag.text = "Score: " + player2Score;
-
-            if(scoreObtained>0)
-            {
-                Player2MiniTag.GetComponent<TMP_Text>().color = Color.green;
-            }
-            else
-            {
-                Player2MiniTag.GetComponent<TMP_Text>().color = Color.red;
-            }
-            Player1MiniTag.GetComponent<TMP_Text>().text=scoreObtained.ToString();
-            Player2MiniTag.SetActive(true);
-
-            StartCoroutine(DisableMiniTag(player));
+            DisplayScoreOnTags(player2Score, scoreObtained, player2ScoreTag, player2MiniTag);
         }
     }
 
-    IEnumerator DisableMiniTag(int player)
+    void DisplayScoreOnTags(int score, int scoreObtained, TMP_Text mainTag, GameObject miniTag)
     {
-        
-        yield return new WaitForSeconds(0.5f);
-        if (player==1)
+        mainTag.text = "Score: " + score;
+
+        if (scoreObtained > 0)
         {
-        Player1MiniTag.SetActive(false);
+            miniTag.GetComponent<TMP_Text>().color = Color.green;
+            miniTag.GetComponent<TMP_Text>().text = "+ " + scoreObtained.ToString();
         }
         else
         {
-            Player2MiniTag.SetActive(false);
+            miniTag.GetComponent<TMP_Text>().color = Color.red;
+            miniTag.GetComponent<TMP_Text>().text = scoreObtained.ToString();
         }
+        miniTag.SetActive(true);
+        StartCoroutine(DisableMiniTag(miniTag));
+    }
 
+    IEnumerator DisableMiniTag(GameObject miniTag)
+    {
+        yield return new WaitForSeconds(0.5f);
+        miniTag.SetActive(false);
+    }
+
+    IEnumerator IncrementLeadingPlayerScore()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(5);
+            if (player1.transform.position.z > player2.transform.position.z)
+            {
+                AddScore(50, 1);
+                AddScore(-50, 2);
+            }
+            else
+            {
+                AddScore(50, 2);
+                AddScore(-50, 1);
+            }
+        }
     }
 }

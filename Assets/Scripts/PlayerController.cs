@@ -1,18 +1,17 @@
 using UnityEngine;
 
-
 public class PlayerController : MonoBehaviour
 {
-    public float turnSpeed = 1.32f;
-    public float speed = 60000;
+    public float turnSpeed;
+    public float speed;
     private float horizontalInput;
-    public float nitroBoostFacor = 1.8f;
+    public float nitroBoostFacor;
     public GameObject nitroFlames;
     private Rigidbody rb;
     public GameObject engineSound;
     public GameObject woodHitSound;
     private bool isJumping = false;
-    public float jumpForce = 1000000;
+    public float jumpForce;
     public int playerNumber;
     private KeyCode upKey;
     private KeyCode downKey;
@@ -21,11 +20,6 @@ public class PlayerController : MonoBehaviour
     private KeyCode boostKey;
     private KeyCode jumpKey;
     public ScoreManager scoreManager;
-
-   
-
-
-
 
     void Start()
     {
@@ -55,7 +49,16 @@ public class PlayerController : MonoBehaviour
     {
         HandleMovement();
         HandleJump();
-        DetectNitroBoost();    
+        DetectNitroBoost();
+        FixRotation();
+    }
+
+    void FixRotation()
+    {
+        if (transform.rotation.eulerAngles.y > 2 && transform.rotation.eulerAngles.y < 358)
+        {
+            transform.rotation = Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z);
+        }
     }
 
     void HandleJump()
@@ -74,6 +77,10 @@ public class PlayerController : MonoBehaviour
             if (DetectNitroBoost() != nitroBoostFacor)
             {
                 engineSound.SetActive(true);
+            }
+            else
+            {
+                engineSound.SetActive(false);
             }
             rb.AddForce(Vector3.forward * speed * DetectNitroBoost());
         }
@@ -142,7 +149,8 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.tag == "WoodBox")
         {
-            scoreManager.AddScore(1000, playerNumber);
-        }    
+            scoreManager.AddScore(100, playerNumber);
+            other.gameObject.GetComponents<BoxCollider>()[1].enabled = false;
+        }
     }
 }
